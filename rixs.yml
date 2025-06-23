@@ -1,0 +1,21 @@
+name: rixs_env
+channels:
+  - conda-forge
+  - veloxchem
+  - tbmasood
+dependencies:
+  - python>=3.8
+  - jupyterlab
+  - k3d
+  - ipympl
+  - ipywidgets
+  - py3dmol
+  - veloxchem
+  - valet
+  - adcc
+  - respondo
+  - basis_set_exchange
+  - pandas
+  - pyscf
+  - mkl
+  - responsefun
