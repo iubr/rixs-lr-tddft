@@ -129,12 +129,6 @@ for c in range(ncore):
     label = "S0_to_C%d_dipole_mom" % (c + 1)
     outfile.create_dataset(label, rixs_results["gs_to_core_transition_dipole_moments"][c])
 
-for s in range(nval):
-    for c in range(ncore):
-        label = "S%d_to_C%d_dipole_mom" % (s + 1, c + 1)
-        outfile.create_dataset(label,
-                       rixs_results["core_to_valence_transition_dipole_moments"][s][c])
-
 outfile.close()
 
 print("\nThe calculation took %.2f min." % ((tm.time() - start)/60.0))
