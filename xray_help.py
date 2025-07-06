@@ -142,14 +142,16 @@ def read_from_h5(filename, label="rsp"):
     
     return res_dict
 
-def add_broadening(bge, bgi, line_param=0.1, line_profile="lorentzian",
-                   step=0.1, interval=None):
+def add_broadening(bge, bgi, line_param=0.1, hwhm=None, fwhm=None,
+                  line_profile="lorentzian", step=0.1, interval=None):
     """ Adds a Gaussian or Lorentzian broadening to a bar graph spectrum.
 
         :param bge         : the numpy array of energies.
         :param bgi         : the numpy array of intensities.
         :param line_param  : the line parameter.
-        :param line_profile: the line profile (guassian or lrentzian)
+        :param fwhm        : the full-width-at-half-max.
+        :param hwhm        : the half-width-at-half-max.
+        :param line_profile: the line profile (gaussian or lorentzian)
         :param step        : the step size.
         :param interval    : the energy interval where the broadening
                              should be applied.
@@ -163,17 +165,25 @@ def add_broadening(bge, bgi, line_param=0.1, line_profile="lorentzian",
 
     x = np.arange(x_min, x_max, step)
     y = np.zeros((len(x)))
+
+    if fwhm is not None:
+        hwhm = fwhm / 2
+    elif hwhm is None:
+        hwhm = line_param
     
+    if line_profile in ['Gaussian', 'gaussian', "Gauss", "gauss"]:
+        sigma = hwhm / (np.sqrt(2 * np.log(2)))
     # go through the frames and calculate the spectrum for each frame
     for xp in range(len(x)):
         for e, f in zip(bge, bgi):
             if line_profile in ['Gaussian', 'gaussian', "Gauss", "gauss"]:
                 y[xp] += f * np.exp(-(
-                    (e - x[xp]) / line_param)**2)
+                    (e - x[xp])**2 / (2 * sigma**2))) / (sigma*np.sqrt(2*np.pi))
             elif line_profile in ['Lorentzian', 'lorentzian',
                                   'Lorentz', 'lorentz']:
-                y[xp] += 0.5 * line_param * f / (np.pi * (
-                        (x[xp] - e)**2 + 0.25 * line_param**2))
+                y[xp] += hwhm * f / (np.pi * (
+                        (x[xp] - e)**2 + hwhm**2))
+
     return x, y
 
 
